@@ -82,7 +82,48 @@ const loginUser = async (req, res) => {
         )
 }
 
+
+const getAllUser = async (req, res) => {
+
+    try {
+
+        const user = req.user;
+        console.log(user);
+
+
+        const fetchUsersByName = await User.find()
+
+        const fetchAllUsers = await User.find(
+            { $or: [{ email: user.email }] }
+        ).select(' -password')
+
+        console.log(fetchAllUsers)
+
+        if (!fetchAllUsers) {
+            throw ApiError(404, "No user found")
+        }
+
+        return res.status(200)
+            .json(
+                new ApiResponse(200, fetchAllUsers, "User fetched Successfully")
+            )
+
+
+    } catch (error) {
+        new ApiResponse(
+            404,
+            {
+                message: 'User not found'
+            },
+        )
+    }
+
+}
+
 export {
     registerUser,
-    loginUser
+    loginUser,
+    getAllUser
 }
+
+
